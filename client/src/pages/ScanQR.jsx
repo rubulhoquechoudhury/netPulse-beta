@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import api from '../lib/api';
@@ -9,23 +9,28 @@ import './ScanQR.css';
 
 export default function ScanQR() {
   const [scannedUser, setScannedUser] = useState(null);
-  const [scanning, setScanning] = useState(true);
   const [adding, setAdding] = useState(false);
+  const [scanning, setScanning] = useState(true);
   const [scanKey, setScanKey] = useState(0);
   const navigate = useNavigate();
   const { updateUser } = useAuth();
   const { addToast } = useToast();
+  const processingRef = useRef(false);
 
-  const onScan = (decodedText) => {
+  const handleDecodedText = (decodedText) => {
+    if (processingRef.current) return;
+    processingRef.current = true;
+
     const match = decodedText.match(/\/user\/([^/?#]+)/);
     const userId = match ? match[1] : decodedText;
-    setScanning(false);
+
     api.get(`/user/${userId}`)
       .then(res => setScannedUser(res.data))
       .catch(() => {
         addToast('User not found', 'error');
-        setScanning(true);
-        setScanKey(k => k + 1);
+      })
+      .finally(() => {
+        processingRef.current = false;
       });
   };
 
@@ -33,10 +38,10 @@ export default function ScanQR() {
     if (!scanning) return;
     const scanner = new Html5QrcodeScanner(
       'qr-reader',
-      { fps: 10, qrbox: { width: 250, height: 250 } },
+      { fps: 10, qrbox: { width: 360, height: 220 } },
       false
     );
-    scanner.render(onScan, () => {});
+    scanner.render(handleDecodedText, () => {});
     return () => {
       try { scanner.clear(); } catch (_) {}
     };
@@ -74,7 +79,9 @@ export default function ScanQR() {
       </header>
 
       <div className="scan-area">
-        {scanning && <div id="qr-reader" key={scanKey} className="qr-reader"></div>}
+        <div className="qr-reader-container">
+          {scanning && <div id="qr-reader" key={scanKey} className="qr-reader"></div>}
+        </div>
         {scannedUser && (
           <div className="scan-result">
             <div className="result-card">
