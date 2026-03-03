@@ -19,7 +19,7 @@
   margin-bottom: 24px;
 }
 
-.qr-card {
+.myqr-card {
   background: linear-gradient(135deg, #fff5e6, #ffe4cc);
   border-radius: var(--radius);
   padding: 24px;

@@ -43,7 +43,7 @@ export default function MyQR() {
         <h2>Your Personal Scan Code</h2>
         <p>Let others scan this to instantly connect.</p>
 
-        <div className="qr-card">
+        <div className="myqr-card">
           <img src={qr?.qrCodeUrl} alt="QR Code" className="qr-image" />
         </div>
 

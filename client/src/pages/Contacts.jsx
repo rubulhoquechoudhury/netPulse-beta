@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Layout from '../components/Layout';
+import ContactModal from '../components/ContactModal';
 import './Contacts.css';
 
 export default function Contacts() {
   const { user } = useAuth();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
+  const [selectedContactId, setSelectedContactId] = useState(null);
   const contacts = user?.contacts || [];
   const filtered = contacts.filter(c => {
     const matchSearch = !search || 
@@ -49,7 +50,12 @@ export default function Contacts() {
       <div className="contacts-list">
         {filtered.length > 0 ? (
           filtered.map(c => (
-            <Link key={c._id} to={`/user/${c.userId}`} className="contact-row">
+            <button
+              key={c._id}
+              type="button"
+              className="contact-row"
+              onClick={() => setSelectedContactId(c.userId)}
+            >
               <div className="contact-avatar">
                 {(c.name || c.email || '?')[0].toUpperCase()}
               </div>
@@ -61,7 +67,7 @@ export default function Contacts() {
                 <span className="action-icon">@</span>
                 <span className="action-icon">🔗</span>
               </div>
-            </Link>
+            </button>
           ))
         ) : (
           <div className="empty-contacts">
@@ -69,6 +75,13 @@ export default function Contacts() {
           </div>
         )}
       </div>
+
+      {selectedContactId && (
+        <ContactModal
+          userId={selectedContactId}
+          onClose={() => setSelectedContactId(null)}
+        />
+      )}
     </Layout>
   );
 }

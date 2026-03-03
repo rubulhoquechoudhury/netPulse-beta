@@ -6,7 +6,7 @@ export default function Layout({ children }) {
     <div className="layout">
       <main className="layout-main">{children}</main>
       <nav className="bottom-nav">
-        <NavLink to="/dashboard" end className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+        <NavLink to="/home" end className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <span className="nav-icon">🏠</span>
           <span>Home</span>
         </NavLink>

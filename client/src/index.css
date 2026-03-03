@@ -28,13 +28,15 @@ body {
   line-height: 1.5;
 }
 
-a {
+ a {
   color: var(--accent);
   text-decoration: none;
+  transition: color 0.2s ease, transform 0.2s ease;
 }
 
-a:hover {
-  text-decoration: underline;
+ a:hover {
+  color: var(--accent-hover);
+  text-decoration: none;
 }
 
 input, button, textarea {

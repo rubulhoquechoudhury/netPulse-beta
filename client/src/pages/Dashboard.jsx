@@ -1,10 +1,13 @@
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Layout from '../components/Layout';
+import ContactModal from '../components/ContactModal';
 import './Dashboard.css';
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const [selectedContactId, setSelectedContactId] = useState(null);
   const greeting = () => {
     const h = new Date().getHours();
     if (h < 12) return 'Good morning';
@@ -25,7 +28,15 @@ export default function Dashboard() {
 
       <div className="qr-cards">
         <Link to="/my-qr" className="qr-card qr-card-primary">
-          <span className="qr-card-icon">▣</span>
+          <span className="qr-card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" className="qr-icon">
+              <rect x="3" y="3" width="7" height="7" rx="1.5" />
+              <rect x="14" y="3" width="7" height="7" rx="1.5" />
+              <rect x="3" y="14" width="7" height="7" rx="1.5" />
+              <rect x="14" y="14" width="3" height="3" />
+              <rect x="18" y="18" width="3" height="3" />
+            </svg>
+          </span>
           <span>Show My QR</span>
         </Link>
         <Link to="/scan" className="qr-card qr-card-secondary">
@@ -42,10 +53,11 @@ export default function Dashboard() {
         {recentContacts.length > 0 ? (
           <div className="contact-list">
             {recentContacts.map(c => (
-              <Link
+              <button
                 key={c._id}
-                to={`/user/${c.userId}`}
+                type="button"
                 className="contact-item"
+                onClick={() => setSelectedContactId(c.userId)}
               >
                 <div className="contact-avatar">
                   {(c.name || c.email || '?')[0].toUpperCase()}
@@ -57,7 +69,7 @@ export default function Dashboard() {
                   </span>
                 </div>
                 <span className="contact-arrow">→</span>
-              </Link>
+              </button>
             ))}
           </div>
         ) : (
@@ -67,11 +79,12 @@ export default function Dashboard() {
         )}
       </section>
 
-      <div className="tip-card">
-        <h3>Networking Tip</h3>
-        <p>Always follow up within 24 hours of scanning a new contact.</p>
-        <span className="tip-icon">💡</span>
-      </div>
+      {selectedContactId && (
+        <ContactModal
+          userId={selectedContactId}
+          onClose={() => setSelectedContactId(null)}
+        />
+      )}
     </Layout>
   );
 }

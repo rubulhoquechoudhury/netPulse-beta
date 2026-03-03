@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
 import { useAuth } from '../context/AuthContext';
@@ -14,9 +14,15 @@ export default function Profile() {
     name: '',
     email: '',
     phone: '',
-    socialLinks: { instagram: '', linkedin: '', twitter: '' }
+    socialLinks: { instagram: '', linkedin: '', twitter: '' },
+    extraLinks: [],
+    avatar: ''
   });
   const [loading, setLoading] = useState(false);
+  const [showLinkModal, setShowLinkModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [newLink, setNewLink] = useState({ label: '', url: '' });
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (user) {
@@ -28,7 +34,9 @@ export default function Profile() {
           instagram: user.socialLinks?.instagram || '',
           linkedin: user.socialLinks?.linkedin || '',
           twitter: user.socialLinks?.twitter || ''
-        }
+        },
+        extraLinks: user.extraLinks || [],
+        avatar: user.avatar || ''
       });
     }
   }, [user]);
@@ -44,6 +52,52 @@ export default function Profile() {
     } else {
       setForm(prev => ({ ...prev, [name]: value }));
     }
+  };
+
+  const handleExtraLinkChange = (index, field, value) => {
+    setForm(prev => {
+      const updated = [...(prev.extraLinks || [])];
+      updated[index] = { ...updated[index], [field]: value };
+      return { ...prev, extraLinks: updated };
+    });
+  };
+
+  const handleAddExtraLink = (e) => {
+    e.preventDefault();
+    if (!newLink.label.trim() || !newLink.url.trim()) {
+      addToast('Please enter both name and link.', 'error');
+      return;
+    }
+    setForm(prev => ({
+      ...prev,
+      extraLinks: [...(prev.extraLinks || []), { ...newLink }]
+    }));
+    setNewLink({ label: '', url: '' });
+    setShowLinkModal(false);
+  };
+
+  const handleRemoveExtraLink = (index) => {
+    setForm(prev => {
+      const updated = [...(prev.extraLinks || [])];
+      updated.splice(index, 1);
+      return { ...prev, extraLinks: updated };
+    });
+  };
+
+  const handlePhotoClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setForm(prev => ({ ...prev, avatar: reader.result || '' }));
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e) => {
@@ -70,10 +124,23 @@ export default function Profile() {
       <form onSubmit={handleSubmit} className="profile-form">
         <div className="profile-photo-section">
           <div className="profile-photo">
-            <span>{(form.name || form.email || '?')[0].toUpperCase()}</span>
+            {form.avatar ? (
+              <img src={form.avatar} alt="Profile" />
+            ) : (
+              <span>{(form.name || form.email || '?')[0].toUpperCase()}</span>
+            )}
             <span className="photo-edit-icon">📷</span>
           </div>
-          <button type="button" className="change-photo-link">Change Profile Photo</button>
+          <button type="button" className="change-photo-link" onClick={handlePhotoClick}>
+            Change Profile Photo
+          </button>
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+            onChange={handlePhotoChange}
+          />
         </div>
 
         <section className="form-section">
@@ -143,28 +210,113 @@ export default function Profile() {
               placeholder="X (Twitter) URL"
             />
           </div>
-          <button type="button" className="add-link-btn">
+          {form.extraLinks?.map((link, index) => (
+            <div className="extra-link-row" key={index}>
+              <input
+                type="text"
+                value={link.label}
+                onChange={e => handleExtraLinkChange(index, 'label', e.target.value)}
+                placeholder="Link name (e.g. Portfolio)"
+              />
+              <input
+                type="url"
+                value={link.url}
+                onChange={e => handleExtraLinkChange(index, 'url', e.target.value)}
+                placeholder="https://example.com"
+              />
+              <button
+                type="button"
+                className="extra-link-remove"
+                onClick={() => handleRemoveExtraLink(index)}
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+          <button type="button" className="add-link-btn" onClick={() => setShowLinkModal(true)}>
             <span>+</span> Add Another Link
           </button>
         </section>
 
-        <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
-          📄 Update Profile
-        </button>
+        <div className="profile-actions">
+          <button type="submit" className="btn btn-primary" disabled={loading}>
+            📄 Update Profile
+          </button>
 
-        <button
-          type="button"
-          className="btn btn-secondary btn-full"
-          style={{ marginTop: 16 }}
-          onClick={async () => {
-            await api.post('/auth/logout');
-            logout();
-            navigate('/');
-          }}
-        >
-          Sign Out
-        </button>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => setShowLogoutModal(true)}
+          >
+            Sign Out
+          </button>
+        </div>
       </form>
+
+      {showLinkModal && (
+        <div className="profile-modal-backdrop">
+          <div className="profile-modal">
+            <h3>Add Link</h3>
+            <div className="modal-field">
+              <label>Name</label>
+              <input
+                type="text"
+                value={newLink.label}
+                onChange={e => setNewLink(prev => ({ ...prev, label: e.target.value }))}
+                placeholder="e.g. Portfolio, Blog"
+              />
+            </div>
+            <div className="modal-field">
+              <label>Link</label>
+              <input
+                type="url"
+                value={newLink.url}
+                onChange={e => setNewLink(prev => ({ ...prev, url: e.target.value }))}
+                placeholder="https://example.com"
+              />
+            </div>
+            <div className="modal-actions">
+              <button type="button" className="btn btn-secondary" onClick={() => setShowLinkModal(false)}>
+                Cancel
+              </button>
+              <button type="button" className="btn btn-primary" onClick={handleAddExtraLink}>
+                Add Link
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showLogoutModal && (
+        <div className="profile-modal-backdrop">
+          <div className="profile-modal">
+            <h3>Sign out?</h3>
+            <p style={{ marginBottom: 12, color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+              Are you sure you want to sign out of your account?
+            </p>
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setShowLogoutModal(false)}
+              >
+                No
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={async () => {
+                  await api.post('/auth/logout');
+                  logout();
+                  navigate('/');
+                }}
+              >
+                Yes, Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 }

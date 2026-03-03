@@ -7,13 +7,19 @@ router.use(authMiddleware);
 
 router.put('/', async (req, res) => {
   try {
-    const { name, email, phone, socialLinks } = req.body;
+    const { name, email, phone, socialLinks, extraLinks, avatar } = req.body;
     const user = await User.findById(req.userId);
     if (!user) return res.status(404).json({ error: 'User not found' });
     if (name !== undefined) user.name = name;
     if (phone !== undefined) user.phone = phone;
     if (socialLinks) {
       user.socialLinks = { ...user.socialLinks, ...socialLinks };
+    }
+    if (Array.isArray(extraLinks)) {
+      user.extraLinks = extraLinks;
+    }
+    if (avatar !== undefined) {
+      user.avatar = avatar;
     }
     if (email && email !== user.email) {
       const existing = await User.findOne({ email: email.toLowerCase() });

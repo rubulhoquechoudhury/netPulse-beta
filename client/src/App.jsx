@@ -19,7 +19,7 @@ function ProtectedRoute({ children }) {
 function PublicRoute({ children }) {
   const { user, loading } = useAuth();
   if (loading) return <div className="loading-screen"><div className="spinner" /></div>;
-  if (user) return <Navigate to="/dashboard" replace />;
+  if (user) return <Navigate to="/home" replace />;
   return children;
 }
 
@@ -27,7 +27,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<PublicRoute><Home /></PublicRoute>} />
-      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/home" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       <Route path="/my-qr" element={<ProtectedRoute><MyQR /></ProtectedRoute>} />
       <Route path="/scan" element={<ProtectedRoute><ScanQR /></ProtectedRoute>} />

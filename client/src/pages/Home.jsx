@@ -23,7 +23,7 @@ export default function Home() {
         const { data } = await api.post('/auth/login', { email, password });
         login(data.user);
         addToast('Welcome back!', 'success');
-        navigate('/profile');
+        navigate('/home');
       } else {
         if (password !== confirmPassword) {
           addToast('Passwords do not match', 'error');
@@ -37,7 +37,7 @@ export default function Home() {
         });
         login(data.user);
         addToast('Account created! Complete your profile.', 'success');
-        navigate('/profile');
+        navigate('/home');
       }
     } catch (err) {
       addToast(err.response?.data?.error || 'Something went wrong', 'error');

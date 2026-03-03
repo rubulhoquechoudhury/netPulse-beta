@@ -7,6 +7,11 @@ const socialLinksSchema = new mongoose.Schema({
   twitter: { type: String, default: '' }
 }, { _id: false });
 
+const extraLinkSchema = new mongoose.Schema({
+  label: { type: String, default: '' },
+  url: { type: String, default: '' }
+}, { _id: false });
+
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -31,6 +36,14 @@ const userSchema = new mongoose.Schema({
   socialLinks: {
     type: socialLinksSchema,
     default: () => ({})
+  },
+  extraLinks: {
+    type: [extraLinkSchema],
+    default: () => []
+  },
+  avatar: {
+    type: String,
+    default: ''
   },
   qrCodeUrl: {
     type: String,

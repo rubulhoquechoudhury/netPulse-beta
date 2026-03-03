@@ -41,7 +41,10 @@
 }
 
 .nav-item.active {
-  color: var(--accent);
+  background: var(--accent);
+  color: white !important;
+  padding: 12px 24px;
+  border-radius: 50px;
 }
 
 .nav-icon {
@@ -49,13 +52,9 @@
 }
 
 .nav-scan {
-  background: var(--accent);
-  color: white !important;
-  padding: 12px 24px;
-  border-radius: 50px;
+  /* keeps scan in the center; bubble is now controlled by .nav-item.active */
 }
 
-.nav-scan:hover, .nav-scan.active {
+.nav-item.active:hover {
   background: var(--accent-hover);
-  color: white !important;
 }
