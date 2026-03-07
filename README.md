@@ -32,6 +32,7 @@ Copy `server/.env.example` to `server/.env` and update:
 
 - `MONGODB_URI` - Your MongoDB Atlas connection string (encode `@` in password as `%40`)
 - `JWT_SECRET` - A secure random string for production
+- `NODE_ENV` - Set to `production` when deploying
 - `FRONTEND_URL` - Frontend URL (default: http://localhost:5173)
 
 ### 3. Run Development
@@ -86,3 +87,11 @@ npm start
 - `GET /api/user/:id` - Public user profile by userId
 - `GET /api/qr/my` - Get current user's QR (protected)
 - `POST /api/contacts/add` - Add contact (protected)
+
+## Deployment
+
+See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for detailed instructions on deploying NetPulse to:
+
+- **Render** (full-stack, recommended) — deploy frontend + backend as one service
+- **Railway** — full-stack alternative to Render
+- **Vercel / Netlify + Render** — split deployment for more control
