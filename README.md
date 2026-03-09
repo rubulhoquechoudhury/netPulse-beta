@@ -1,88 +1,32 @@
-# NetPulse - QR-Based Professional Networking
+# netPulse
 
-A full-stack web application for sharing professional profiles via QR codes. Scan QR codes to instantly connect and save contacts.
+netPulse is a web app to share your personal social and contact links with just one QR scan.
 
-## Tech Stack
+## Why I Built This
 
-- **Frontend:** Vite + React
-- **Backend:** Node.js + Express
-- **Database:** MongoDB (Atlas)
-- **Authentication:** JWT (HTTP-only cookies)
-- **QR:** Auto-generated permanent QR per user
-- **Scanner:** Camera-based (html5-qrcode)
+In conferences and meetings, we meet many people in a short time.
 
-## Setup
+We often exchange multiple details like:
+- phone numbers
+- email addresses
+- social profiles
 
-### 1. Install Dependencies
+Saving every single contact manually on the phone is a hassle and takes too much time.
+Even when we collect business cards, we often forget to save those details later.
 
-```bash
-# Root
-npm install
+So I built **netPulse** to make networking faster and easier.
 
-# Server
-cd server && npm install
+## What It Does
 
-# Client
-cd client && npm install
-```
+With NetPulse, you can:
+- create your profile with important social/contact links
+- generate your personal QR code
+- let others scan once and instantly access your details
 
-### 2. Environment Variables
+This removes repetitive manual contact saving and helps people connect quickly.
 
-Copy `server/.env.example` to `server/.env` and update:
+## Core Idea
 
-- `MONGODB_URI` - Your MongoDB Atlas connection string (encode `@` in password as `%40`)
-- `JWT_SECRET` - A secure random string for production
-- `FRONTEND_URL` - Frontend URL (default: http://localhost:5173)
+**One scan -> all your important links.**
 
-### 3. Run Development
-
-```bash
-# From root - runs both client and server
-npm run dev
-```
-
-Or run separately:
-
-```bash
-# Terminal 1 - Backend (port 5000)
-cd server && npm run dev
-
-# Terminal 2 - Frontend (port 5173)
-cd client && npm run dev
-```
-
-### 4. Build for Production
-
-```bash
-npm run build
-npm start
-```
-
-## Features
-
-- **Auth:** Login / Create Account with JWT
-- **Profile:** Edit name, email, phone, social links
-- **QR Code:** Unique permanent QR linked to `/user/:id`
-- **Scan:** Camera-based QR scanner, add scanned users to contacts
-- **Contacts:** View and search saved contacts
-
-## Project Structure
-
-```
-/client          - Vite + React frontend
-/server          - Express API
-  /models        - Mongoose schemas
-  /routes        - API routes
-  /middleware    - Auth middleware
-```
-
-## API Endpoints
-
-- `POST /api/auth/register` - Create account
-- `POST /api/auth/login` - Login
-- `POST /api/auth/logout` - Logout
-- `GET /api/auth/me` - Current user (protected)
-- `PUT /api/profile` - Update profile (protected)
-- `GET /api/user/:id` - Public user profile by userId
-- `GET /api/qr/my` - Get current user's QR (protected)
-- `POST /api/contacts/add` - Add contact (protected)
+Simple, quick, and conference-friendly.
